@@ -42,6 +42,17 @@ export default function Home() {
     }
   }
 
+  // Sets the fakeNftTokenId to the first non used number
+  const firstFakeNftTokenIdFree = async () => {
+    const proposals = await fetchAllPassedProposals()
+    const result = proposals.filter(
+      (proposal, index) => proposal.nftTokenId !== index
+    )
+    // proposals.indexOf(result[0].nftTokenId)
+    // console.log(proposals.indexOf(result[0].nftTokenId))
+    // return index
+  }
+
   // Reads the ETH balance of the DAO contract and sets the `treasuryBalance` state variable
   const getDAOTreasuryBalance = async () => {
     try {
@@ -123,6 +134,20 @@ export default function Home() {
       for (let i = 0; i < numProposals; i++) {
         const proposal = await fetchProposalById(i)
         proposals.push(proposal)
+      }
+      setProposals(proposals)
+      return proposals
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const fetchAllPassedProposals = async () => {
+    try {
+      const proposals = []
+      for (let i = 0; i < numProposals; i++) {
+        const proposal = await fetchProposalById(i)
+        proposal.yayVotes > proposal.nayVotes && proposals.push(proposal)
       }
       setProposals(proposals)
       return proposals
@@ -247,6 +272,10 @@ export default function Home() {
 
   // Renders the 'Create Proposal' tab content
   function renderCreateProposalTab() {
+    const nftId = firstFakeNftTokenIdFree()
+    // console.log(nftId)
+    // firstFakeNftTokenIdFree()
+
     if (loading) {
       return (
         <div className={styles.description}>
